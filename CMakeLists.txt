@@ -13,6 +13,7 @@ set(SAMPLE_SOURCES
     "./sources/application.cpp"
     "./sources/render/renderer.cpp"
     "./sources/render/mesh.cpp"
+    "./sources/render/transform.cpp"
 )
 
 set(SAMPLE_INCLUDE

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <core/span.hpp>
 #include <core/math/vector3.hpp>
 #include <core/unique_ptr.hpp>
 #include <graphics/api/buffer.hpp>

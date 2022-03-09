@@ -10,6 +10,14 @@
 #include <graphics/api/compute_pipeline.hpp>
 #include <graphics/api/shader.hpp>
 #include "mesh.hpp"
+#include "transform.hpp"
+#include "material.hpp"
+
+struct Instance {
+    Transform Transform = {};
+    Mesh     *Mesh      = nullptr;
+    Material *Material  = nullptr;
+};
 
 class Renderer {
 private:
@@ -46,5 +54,5 @@ private:
 public:
 	Renderer(RenderPass *pass);
 
-    void Render(const Framebuffer *fb, ConstSpan<Mesh> draw_list, const Semaphore *wait, const Semaphore *signal);
+    void Render(const Framebuffer *fb, ConstSpan<Instance> draw_list, const Semaphore *wait, const Semaphore *signal);
 };
