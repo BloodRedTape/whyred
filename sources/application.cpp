@@ -5,11 +5,14 @@ Application::Application(){
 }
 
 void Application::Run(){
-	Semaphore acquire;
+	Semaphore acquire, present;
 	while (m_Window.IsOpen()) {
 		
 		m_Window.AcquireNextFramebuffer(&acquire);
-		m_Window.PresentCurrentFramebuffer(&acquire);
+
+		m_Renderer.Render(m_Window.CurrentFramebuffer(), {}, {}, &acquire, &present);
+
+		m_Window.PresentCurrentFramebuffer(&present);
 
 		m_Window.DispatchEvents();
 	}

@@ -17,11 +17,11 @@ void CameraController::Update(float dt, Vector2s mouse_position) {
 	if(Keyboard::IsKeyPressed(Key::A))
 		move_direction.x -= 1.f;
 
-	move_direction = move_direction / Sqrt(Dot(move_direction, move_direction)) * dt * Speed;
+	move_direction = Normalize(move_direction) * dt * Speed;
 		
-	Vector4f move_offset = RotateY<float>(m_Camera.Rotation.y) * Vector4f(move_direction.x, move_direction.y, move_direction.z, 1);
+	Vector4f move_offset = RotateY<float>(m_Camera.Rotation.y) * Vector4f(move_direction, 1);
 
-	m_Camera.Position += Vector3f(move_offset.x, move_offset.y, move_offset.z);
+	m_Camera.Position += Vector3f(move_offset.XYZ());
 
 	Vector2s rotate_offset = m_LastMousePosition - mouse_position;
 	m_Camera.Rotation += Vector3f(rotate_offset.y, rotate_offset.x, 0);
