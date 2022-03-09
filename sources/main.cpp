@@ -1,8 +1,8 @@
 #include <core/print.hpp>
 #include <core/span.hpp>
-
+#include "application.hpp"
 
 int StraitXMain(Span<const char*> args){
-    Println("Hello From StraitX");
+    Application().Run();
     return 0;
 }
