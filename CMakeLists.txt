@@ -14,6 +14,7 @@ set(SAMPLE_SOURCES
     "./sources/render/renderer.cpp"
     "./sources/render/mesh.cpp"
     "./sources/render/transform.cpp"
+    "./sources/render/camera.cpp"
 )
 
 set(SAMPLE_INCLUDE

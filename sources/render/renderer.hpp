@@ -52,7 +52,7 @@ private:
 
     UniquePtr<GraphicsPipeline> m_GraphicsPipeline{nullptr};
 public:
-	Renderer(RenderPass *pass);
+	Renderer(const RenderPass *pass);
 
     void Render(const Framebuffer *fb, ConstSpan<Instance> draw_list, const Semaphore *wait, const Semaphore *signal);
 };
