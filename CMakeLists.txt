@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 add_subdirectory(StraitXPackages/Base)
 add_subdirectory(StraitXPackages/ImGui)
+add_subdirectory(thirdparty/Assimp-FBXLoader)
 
 set(SAMPLE_SOURCES
     "./sources/main.cpp"
@@ -24,7 +25,7 @@ set(SAMPLE_INCLUDE
 )
 
 add_executable(Sample ${SAMPLE_SOURCES})
-target_link_libraries(Sample StraitXBase StraitXImGui)
+target_link_libraries(Sample StraitXBase StraitXImGui assimp-fbxloader)
 target_include_directories(Sample
     PUBLIC ${SAMPLE_INCLUDE}
 )

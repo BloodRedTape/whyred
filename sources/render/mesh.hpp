@@ -21,5 +21,11 @@ private:
 public:
 	Mesh(ConstSpan<Vertex> vertices, ConstSpan<Index> indices);
 
+	Mesh(Mesh &&) = default;
+
+	Mesh &operator=(Mesh &&) = default;
+
 	void Bind(CommandBuffer &buffer);
+
+	static Mesh LoadFromFile(const char *filepath);
 };

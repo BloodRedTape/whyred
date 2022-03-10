@@ -4,3 +4,6 @@
 [submodule "StraitXPackages/ImGui"]
 	path = StraitXPackages/ImGui
 	url = https://github.com/StraitX/ImGui
+[submodule "thirdparty/Assimp-FBXLoader"]
+	path = thirdparty/Assimp-FBXLoader
+	url = https://github.com/BloodRedTape/Assimp-FBXLoader
