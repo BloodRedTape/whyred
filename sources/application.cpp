@@ -28,17 +28,26 @@ Application::Application(){
 }
 
 void Application::Run(){
-	Semaphore acquire, present;
+	Semaphore acquire, render, present;
 
 	Clock cl;
 	while (m_Window.IsOpen()) {
 		float dt = cl.Restart().AsSeconds();
 
-		m_Controller.Update(dt, Mouse::RelativePosition(m_Window));
+		Vector2s mouse_position = Mouse::RelativePosition(m_Window);
 		
+		if(!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+			m_Controller.Update(dt, mouse_position);
+	
 		m_Window.AcquireNextFramebuffer(&acquire);
 
-		m_Renderer.Render(m_Window.CurrentFramebuffer(), m_Camera, m_Instances, &acquire, &present);
+		m_Renderer.Render(m_Window.CurrentFramebuffer(), m_Camera, m_Instances, &acquire, &render);
+
+		m_Backend.NewFrame(dt, mouse_position, m_Window.Size());
+
+		OnImGui();
+
+		m_Backend.RenderFrame(m_Window.CurrentFramebuffer(), &render, &present);
 
 		m_Window.PresentCurrentFramebuffer(&present);
 
@@ -48,10 +57,18 @@ void Application::Run(){
 	GPU::WaitIdle();
 }
 
+void Application::OnImGui() {
+	ImGui::Begin("Test");
+
+	ImGui::End();
+}
+
 void Application::OnEvent(const Event& e){
 	if(e.Type == EventType::WindowClose)
 		m_Window.Close();
 
 	if(e.Type == EventType::KeyPress && e.KeyPress.KeyCode == Key::Q)
 		m_Window.Close();
+
+	m_Backend.HandleEvent(e);
 }

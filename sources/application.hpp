@@ -24,5 +24,7 @@ public:
 
 	void Run();
 
+	void OnImGui();
+
 	void OnEvent(const Event &e);
 };

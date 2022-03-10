@@ -30,5 +30,9 @@ void CameraController::Update(float dt, Vector2s mouse_position) {
 
 	Vector2s rotate_offset = m_LastMousePosition - mouse_position;
 	m_Camera.Rotation += Vector3f(-rotate_offset.y, rotate_offset.x, 0);
+	if(m_Camera.Rotation.x > 90)
+		m_Camera.Rotation.x = 90;
+	if(m_Camera.Rotation.x < -90)
+		m_Camera.Rotation.x = -90;
 	m_LastMousePosition = mouse_position;
 }
