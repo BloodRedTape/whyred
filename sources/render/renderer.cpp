@@ -3,7 +3,7 @@
 #include <graphics/api/framebuffer.hpp>
 #include <graphics/api/shader.hpp>
 #include <core/print.hpp>
-#include "utils.hpp"
+#include "utils/fs.hpp"
 
 Renderer::Renderer(const RenderPass* pass):
 	m_Pass(pass)
@@ -40,27 +40,31 @@ Renderer::Renderer(const RenderPass* pass):
 
 void Renderer::Render(const Framebuffer* fb, const Camera& camera, ConstSpan<Instance> draw_list, const Semaphore* wait, const Semaphore* signal){
 	m_RenderFinished.WaitAndReset();
-
-	Println("Render: %", draw_list.Size());
-
 	m_SetPool.NextFrame();
+	m_ModelUniformPool.Reset();
 
 	m_CmdBuffer->Begin();
+	m_CameraUniform.CmdUpdate(*m_CmdBuffer, camera);
+	for (const Instance &instance : draw_list) {
+		DescriptorSet *set = m_SetPool.Alloc();
+		set->UpdateUniformBinding(0, 0, m_CameraUniform);
+
+		ModelUniform *model_uniform = m_ModelUniformPool.NewOrGet();
+		model_uniform->CmdUpdate(*m_CmdBuffer, instance.Transform);
+		set->UpdateUniformBinding(1, 0, *model_uniform);
+	}
+
 	auto fb_size = fb->Size();
 	m_CmdBuffer->SetScissor (0, 0, fb_size.x, fb_size.y);
 	m_CmdBuffer->SetViewport(0, 0, fb_size.x, fb_size.y);
-	m_CameraUniform.CmdUpdate(*m_CmdBuffer, camera);
 	m_CmdBuffer->ClearColor(fb->Attachments()[0], Color::LightBlue);
 	m_CmdBuffer->ClearDepthStencil(fb->Attachments()[1], 1.f);
 	m_CmdBuffer->Bind(m_GraphicsPipeline.Get());
 	m_CmdBuffer->BeginRenderPass(m_Pass, fb);
 	{
-		for(Instance instance: draw_list){
-			DescriptorSet *set = m_SetPool.Alloc();
-			set->UpdateUniformBinding(0, 0, m_CameraUniform);
-			m_CmdBuffer->Bind(set);
-			instance.Mesh->CmdDraw(*m_CmdBuffer);
-			Println("Count: %", instance.Mesh->IndicesCount());
+		for(int i = 0; i<draw_list.Size(); i++){
+			m_CmdBuffer->Bind(m_SetPool[i]);
+			draw_list[i].Mesh->CmdDraw(*m_CmdBuffer);
 		}
 	}
 	m_CmdBuffer->EndRenderPass();

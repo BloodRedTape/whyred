@@ -16,6 +16,7 @@
 #include "transform.hpp"
 #include "material.hpp"
 #include "camera.hpp"
+#include "utils/pool.hpp"
 
 struct Instance {
     Transform Transform = {};
@@ -63,6 +64,44 @@ public:
     }
 };
 
+class ModelUniform{
+private:
+    struct Staging{
+        Matrix4f u_Model;
+    };
+    UniquePtr<Buffer> m_UniformBuffer;
+    UniquePtr<Buffer> m_StagingBuffer;
+    Staging *m_StagingDataPtr{m_StagingBuffer->Map<Staging>()};
+public:
+    ModelUniform():
+        m_UniformBuffer(
+            Buffer::Create(
+                sizeof(Staging), 
+                BufferMemoryType::DynamicVRAM, 
+                BufferUsageBits::UniformBuffer | BufferUsageBits::TransferDestination
+            )
+        ),
+        m_StagingBuffer(
+            Buffer::Create(
+                sizeof(Staging), 
+                BufferMemoryType::UncachedRAM, 
+                BufferUsageBits::TransferSource
+            )
+        )
+    {}
+
+    void CmdUpdate(CommandBuffer& cmd_buffer, const Transform& transform) {
+        using namespace Math;
+        m_StagingDataPtr->u_Model = transform.ToMatrix();
+
+        cmd_buffer.Copy(m_StagingBuffer.Get(), m_UniformBuffer.Get(), sizeof(Staging));
+    }
+
+    operator const Buffer*()const{
+        return m_UniformBuffer.Get();
+    }
+};
+
 class Renderer {
 private:
     const RenderPass *m_Pass;
@@ -76,9 +115,15 @@ private:
 
     Fence m_RenderFinished;
 
-    const Array<ShaderBinding, 1> m_Bindings {
+    const Array<ShaderBinding, 2> m_Bindings {
         ShaderBinding{
             0,
+            1,
+            ShaderBindingType::UniformBuffer,
+            ShaderStageBits::Vertex
+        },
+        ShaderBinding{
+            1,
             1,
             ShaderBindingType::UniformBuffer,
             ShaderStageBits::Vertex
@@ -91,6 +136,8 @@ private:
     
     static constexpr size_t s_SetPoolSize = 20;
     SingleFrameDescriptorSetPool m_SetPool{{s_SetPoolSize, m_SetLayout.Get()}};
+
+    ReusableObjectsPool<ModelUniform> m_ModelUniformPool;
 
     UniquePtr<GraphicsPipeline> m_GraphicsPipeline{nullptr};
     CameraUniform m_CameraUniform;

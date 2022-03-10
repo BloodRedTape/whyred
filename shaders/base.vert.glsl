@@ -9,12 +9,16 @@ layout(location = 1)out vec3 v_Normal;
 layout(location = 2)out vec3 v_Color;
 
 layout(row_major, binding = 0) uniform Camera{
-	layout(row_major)mat4 u_Projection;
-	layout(row_major)mat4 u_View;
+	mat4 u_Projection;
+	mat4 u_View;
+};
+
+layout(row_major, binding = 1) uniform Model{
+	mat4 u_Model;
 };
 
 void main() {
-	v_WorldSpacePosition = a_ModelSpacePosition;
+	v_WorldSpacePosition = (u_Model * vec4(a_ModelSpacePosition.xyz, 1.0)).xyz;
 	v_Normal = a_Normal;
 	v_Color  = a_Color;
 

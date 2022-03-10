@@ -18,7 +18,7 @@ set(SAMPLE_SOURCES
     "./sources/render/transform.cpp"
     "./sources/render/camera.cpp"
     "./sources/camera_controller.cpp"
-    "./sources/utils.cpp"
+    "./sources/utils/fs.cpp"
 )
 
 set(SAMPLE_INCLUDE

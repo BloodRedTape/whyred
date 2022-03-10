@@ -19,11 +19,11 @@ Application::Application(){
 
 	m_Meshes.Add(Mesh::LoadFromFile("content/cube.fbx"));
 	m_Meshes.Add(Mesh::LoadFromFile("content/sphere.fbx"));
-	//m_Meshes.Add(Mesh(vertices, indices));
+	m_Meshes.Add(Mesh(vertices, indices));
 
-	m_Instances.Emplace(Transform{}, &m_Meshes[0], nullptr);
-	//m_Instances.Emplace(Transform{}, &m_Meshes[1], nullptr);
-	//m_Instances.Emplace(Transform{}, &m_Meshes[2], nullptr);
+	m_Instances.Emplace(Transform{{0, 0,-2}}, &m_Meshes[0], nullptr);
+	m_Instances.Emplace(Transform{{3, 0, 0}}, &m_Meshes[1], nullptr);
+	m_Instances.Emplace(Transform{{0, 1, 0}}, &m_Meshes[2], nullptr);
 
 }
 
@@ -58,8 +58,10 @@ void Application::Run(){
 }
 
 void Application::OnImGui() {
-	ImGui::Begin("Test");
-
+	ImGui::Begin("Debug");
+	for (const Instance& instance: m_Instances) {
+			
+	}
 	ImGui::End();
 }
 

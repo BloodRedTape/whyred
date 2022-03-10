@@ -2,5 +2,11 @@
 #include <core/math/transform.hpp>
 
 Matrix4f Transform::ToMatrix()const{
-	return {1.f};
+	using namespace Math;
+	return Rotate<float>(Rotation) * Matrix4f{
+		Vector4f(Scale.x, 0,       0,       0),
+		Vector4f(0,       Scale.y, 0,       0),
+		Vector4f(0,       0,       Scale.z, 0),
+		Vector4f(0,       0,       0,       1)
+	} * Translate(Position);
 }
