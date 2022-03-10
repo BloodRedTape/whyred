@@ -27,9 +27,10 @@ Mesh::Mesh(ConstSpan<Vertex> vertices, ConstSpan<Index> indices):
 	)
 {}
 
-void Mesh::Bind(CommandBuffer& buffer){
+void Mesh::CmdDraw(CommandBuffer& buffer){
 	buffer.BindVertexBuffer(m_VertexBuffer.Get());
 	buffer.BindIndexBuffer(m_IndexBuffer.Get(), IndicesType::Uint32);
+    buffer.DrawIndexed(IndicesCount());
 }
 
 static Vector3f ToVector3(aiVector3D vector){

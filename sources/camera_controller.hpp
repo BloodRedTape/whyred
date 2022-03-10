@@ -10,8 +10,9 @@ private:
 public:
 	float Speed = 1.f;
 
-	CameraController(Camera &camera):
-		m_Camera(camera)
+	CameraController(Camera &camera, Vector2s initial_mouse_position):
+		m_Camera(camera),
+		m_LastMousePosition(initial_mouse_position)
 	{}
 
 	void Update(float dt, Vector2s mouse_position);

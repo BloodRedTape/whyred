@@ -25,7 +25,11 @@ public:
 
 	Mesh &operator=(Mesh &&) = default;
 
-	void Bind(CommandBuffer &buffer);
+	void CmdDraw(CommandBuffer &buffer);
+
+	size_t IndicesCount()const{
+		return m_IndexBuffer->Size() / sizeof(Index);
+	}
 
 	static Mesh LoadFromFile(const char *filepath);
 };
