@@ -7,6 +7,8 @@
 #include <assimp/DefaultLogger.hpp>
 #include <assimp/vector3.h>
 #include <core/list.hpp>
+#include <string>
+#include <core/os/file.hpp>
 
 Mesh::Mesh(ConstSpan<Vertex> vertices, ConstSpan<Index> indices):
 	m_VertexBuffer(
@@ -35,8 +37,15 @@ static Vector3f ToVector3(aiVector3D vector){
 }
 
 Mesh Mesh::LoadFromFile(const char* filepath) {
+    std::string path = filepath;
+
+    if(!File::Exist(path.c_str()))
+        path = "../../../" + path;
+
+    SX_ASSERT(File::Exist(path.c_str()));
+
     Assimp::Importer imp;
-    const aiScene *scene = imp.ReadFile(filepath, aiProcess_Triangulate | aiProcess_GenNormals);
+    const aiScene *scene = imp.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals);
     assert(scene->mNumMeshes == 1);
 
     int vertices_count = 0;

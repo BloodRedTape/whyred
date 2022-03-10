@@ -4,6 +4,7 @@
 #include <imgui/backend.hpp>
 
 #include "render/renderer.hpp"
+#include "render/mesh.hpp"
 
 class Application {
 private:
@@ -11,6 +12,9 @@ private:
 	ImGuiBackend m_Backend{m_Window.FramebufferPass()};
 
 	Renderer m_Renderer{m_Window.FramebufferPass()};
+
+	List<Mesh> m_Meshes;
+	List<Instance> m_Instances;
 public:
 	Application();
 

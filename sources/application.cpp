@@ -2,6 +2,10 @@
 
 Application::Application(){
 	m_Window.SetEventsHanlder({this, &Application::OnEvent});
+
+	m_Meshes.Add(Mesh::LoadFromFile("content/cube.fbx"));
+
+	m_Instances.Emplace(Transform{}, &m_Meshes[0], nullptr);
 }
 
 void Application::Run(){
