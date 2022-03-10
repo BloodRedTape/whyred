@@ -16,4 +16,8 @@ public:
 	{}
 
 	void Update(float dt, Vector2s mouse_position);
+
+	void Reset(Vector2s initial_mouse_position) {
+		m_LastMousePosition = initial_mouse_position;
+	}
 };

@@ -10,7 +10,7 @@
 #include <string>
 #include <core/os/file.hpp>
 
-Mesh::Mesh(ConstSpan<Vertex> vertices, ConstSpan<Index> indices):
+Mesh::Mesh(ConstSpan<Vertex> vertices, ConstSpan<Index> indices, String name):
 	m_VertexBuffer(
 		Buffer::Create(
 			vertices.Pointer(), vertices.Size() * sizeof(Vertex), 
@@ -24,7 +24,8 @@ Mesh::Mesh(ConstSpan<Vertex> vertices, ConstSpan<Index> indices):
 			BufferMemoryType::DynamicVRAM, 
 			BufferUsageBits::IndexBuffer| BufferUsageBits::TransferDestination
 		)
-	)
+	),
+    m_Name(Move(name))
 {}
 
 void Mesh::CmdDraw(CommandBuffer& buffer){
@@ -80,5 +81,5 @@ Mesh Mesh::LoadFromFile(const char* filepath) {
                 indices.Add(scene->mMeshes[i]->mFaces[j].mIndices[h]);
     }
 
-    return Mesh(vertices, indices);
+    return Mesh(vertices, indices, filepath);
 }

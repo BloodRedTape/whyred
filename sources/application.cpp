@@ -19,7 +19,7 @@ Application::Application(){
 
 	m_Meshes.Add(Mesh::LoadFromFile("content/cube.fbx"));
 	m_Meshes.Add(Mesh::LoadFromFile("content/sphere.fbx"));
-	m_Meshes.Add(Mesh(vertices, indices));
+	m_Meshes.Add(Mesh(vertices, indices, "Test Quad"));
 
 	m_Instances.Emplace(Transform{{0, 0,-2}}, &m_Meshes[0], nullptr);
 	m_Instances.Emplace(Transform{{3, 0, 0}}, &m_Meshes[1], nullptr);
@@ -36,7 +36,7 @@ void Application::Run(){
 
 		Vector2s mouse_position = Mouse::RelativePosition(m_Window);
 		
-		if(!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+		if(m_IsControlled)
 			m_Controller.Update(dt, mouse_position);
 	
 		m_Window.AcquireNextFramebuffer(&acquire);
@@ -59,8 +59,18 @@ void Application::Run(){
 
 void Application::OnImGui() {
 	ImGui::Begin("Debug");
-	for (const Instance& instance: m_Instances) {
-			
+	for (int i = 0; i<m_Instances.Size(); i++) {
+		Instance &instance = m_Instances[i];
+
+		ImGui::PushID(i);
+		ImGui::Text("Mesh: %s", instance.Mesh->Name().Data());
+		ImGui::DragFloat3("Position", &instance.Transform.Position[0], 0.1, -20, 20);
+		ImGui::DragFloat3("Rotation", &instance.Transform.Rotation[0], 1, -180, 180);
+		ImGui::DragFloat3("Scale", &instance.Transform.Scale[0], 0.1, 0, 20);
+
+
+		ImGui::Separator();
+		ImGui::PopID();
 	}
 	ImGui::End();
 }
@@ -71,6 +81,18 @@ void Application::OnEvent(const Event& e){
 
 	if(e.Type == EventType::KeyPress && e.KeyPress.KeyCode == Key::Q)
 		m_Window.Close();
+
+	if(e.Type == EventType::KeyPress && e.KeyPress.KeyCode == Key::Escape){
+		m_IsControlled = false;
+		Mouse::SetVisible(true);
+	}
+
+	if (e.Type == EventType::MouseButtonPress && !ImGui::IsWindowHovered(ImGuiFocusedFlags_AnyWindow)) {
+		m_Controller.Reset(Mouse::RelativePosition(m_Window));
+		m_IsControlled = true;
+		Mouse::SetVisible(false);
+	}
+
 
 	m_Backend.HandleEvent(e);
 }

@@ -3,6 +3,7 @@
 #include <core/span.hpp>
 #include <core/math/vector3.hpp>
 #include <core/unique_ptr.hpp>
+#include <core/string.hpp>
 #include <graphics/api/buffer.hpp>
 #include <graphics/api/command_buffer.hpp>
 
@@ -18,8 +19,9 @@ class Mesh {
 private:
 	UniquePtr<Buffer> m_VertexBuffer;
 	UniquePtr<Buffer> m_IndexBuffer;
+	String m_Name;
 public:
-	Mesh(ConstSpan<Vertex> vertices, ConstSpan<Index> indices);
+	Mesh(ConstSpan<Vertex> vertices, ConstSpan<Index> indices, String name = "");
 
 	Mesh(Mesh &&) = default;
 
@@ -29,6 +31,10 @@ public:
 
 	size_t IndicesCount()const{
 		return m_IndexBuffer->Size() / sizeof(Index);
+	}
+
+	const String& Name()const {
+		return m_Name;
 	}
 
 	static Mesh LoadFromFile(const char *filepath);

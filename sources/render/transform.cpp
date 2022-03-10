@@ -3,10 +3,10 @@
 
 Matrix4f Transform::ToMatrix()const{
 	using namespace Math;
-	return Rotate<float>(Rotation) * Matrix4f{
+	return Translate(Position) * Rotate<float>(Rotation) * Matrix4f{
 		Vector4f(Scale.x, 0,       0,       0),
 		Vector4f(0,       Scale.y, 0,       0),
 		Vector4f(0,       0,       Scale.z, 0),
 		Vector4f(0,       0,       0,       1)
-	} * Translate(Position);
+	};
 }
