@@ -31,7 +31,10 @@ vec3 CalculateDiffuseLightColor() {
 	vec3 diff_color = vec3(0);
 
 	for(int i = 0; i<u_PointLightsCount; i++){
-		float diff = dot(normalize(u_PointLights[i].Position - v_WorldSpacePosition), v_Normal);
+		vec3 frag_to_light = u_PointLights[i].Position - v_WorldSpacePosition;
+		float diff = dot(normalize(frag_to_light), v_Normal);
+
+		diff *= min(u_PointLights[i].Radius/length(frag_to_light), 1.0);
 		
 		diff_color += diff * u_PointLights[i].Color.rgb * u_PointLights[i].Color.a;
 	}	

@@ -14,7 +14,6 @@
 #include <graphics/api/shader.hpp>
 #include "mesh.hpp"
 #include "transform.hpp"
-#include "material.hpp"
 #include "camera.hpp"
 #include "utils/pool.hpp"
 #include "uniforms.hpp"
@@ -22,7 +21,6 @@
 struct Instance {
     Transform Transform = {};
     Mesh     *Mesh      = nullptr;
-    Material *Material  = nullptr;
 };
 
 class Renderer{

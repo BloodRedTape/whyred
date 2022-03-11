@@ -2,7 +2,6 @@
 
 #include <core/math/transform.hpp>
 #include "camera.hpp"
-#include "light.hpp"
 
 template <typename ContentStruct>
 class UniformBuffer{
@@ -58,6 +57,12 @@ struct ModelUniform{
         u_Model(trasform.ToMatrix()),
         u_Normal(Math::Rotate<float>(Math::Rad(trasform.Rotation)))
     {}
+};
+
+struct PointLight{
+	Vector3f Position  = {0, 0, 0};
+	float    Radius    = 0;
+	Vector4f Color     = {1.f, 1.f, 1.f, 1.f};
 };
 
 struct LightsUniform {

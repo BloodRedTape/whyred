@@ -22,13 +22,13 @@ Application::Application(){
 	m_Meshes.Add(Mesh::LoadFromFile("content/plane.fbx"));
 	m_Meshes.Add(Mesh::LoadFromFile("content/monkey.fbx"));
 
-	m_Instances.Emplace(Transform{{-3, 0,-2}}, &m_Meshes[0], nullptr);
-	m_Instances.Emplace(Transform{{3, 0, 0}}, &m_Meshes[1], nullptr);
-	m_Instances.Emplace(Transform{{0,-1, 0}, {-90, 0, 0}, {20, 1, 20}}, &m_Meshes[2], nullptr);
-	m_Instances.Emplace(Transform{{0, 2, -5}, {-90, 0, 0}, {3, 3, 3}}, &m_Meshes[3], nullptr);
+	m_Instances.Emplace(Transform{{-3, 0,-2}}, &m_Meshes[0]);
+	m_Instances.Emplace(Transform{{3, 0, 0}}, &m_Meshes[1]);
+	m_Instances.Emplace(Transform{{0,-1, 0}, {-90, 0, 0}, {20, 1, 20}}, &m_Meshes[2]);
+	m_Instances.Emplace(Transform{{0, 2, -5}, {-90, 0, 0}, {3, 3, 3}}, &m_Meshes[3]);
 
-	m_PointLights.Add({{0, 2, 0}, 1, Color::Red});
-	m_PointLights.Add({{3, 2, 0}, 1, Color::Blue});
+	m_PointLights.Add({{0, 2, 0}, 3, Color::Red});
+	m_PointLights.Add({{3, 2, 0}, 2, Color::Blue});
 }
 
 void Application::Run(){
@@ -75,6 +75,19 @@ void Application::OnImGui() {
 		ImGui::Separator();
 		ImGui::PopID();
 	}
+
+	ImGui::PushID(1);
+	for (int i = 0; i<m_PointLights.Size(); i++) {
+		PointLight &light = m_PointLights[i];
+
+		ImGui::PushID(i);
+		ImGui::DragFloat3("Position", &light.Position[0], 0.1, -20, 20);
+		ImGui::DragFloat("Radius", &light.Radius, 0.1, 0, 20);
+		ImGui::ColorEdit3("Color", &light.Color[0]);
+		ImGui::Separator();
+		ImGui::PopID();
+	}
+	ImGui::PopID();
 	ImGui::End();
 }
 

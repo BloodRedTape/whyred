@@ -22,7 +22,7 @@ void CameraController::Update(float dt, Vector2s mouse_position) {
 		move_direction.y -= 1.f;
 	
 	if(move_direction.x || move_direction.y || move_direction.z)
-		move_direction = Normalize(move_direction) * dt * Speed;
+		move_direction = Normalize(move_direction) * dt * (Speed + 2 * Keyboard::IsKeyPressed(Key::LeftControl));
 		
 	Vector4f move_offset = RotateY<float>(Rad(m_Camera.Rotation.y)) * Vector4f(move_direction, 1);
 
