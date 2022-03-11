@@ -3,6 +3,7 @@
 #include <graphics/api/framebuffer.hpp>
 #include <graphics/api/shader.hpp>
 #include <core/print.hpp>
+#include <core/math/transform.hpp>
 #include "utils/fs.hpp"
 
 Renderer::Renderer(const RenderPass* pass):
@@ -44,13 +45,13 @@ void Renderer::Render(const Framebuffer* fb, const Camera& camera, ConstSpan<Ins
 	m_ModelUniformPool.Reset();
 
 	m_CmdBuffer->Begin();
-	m_CameraUniform.CmdUpdate(*m_CmdBuffer, camera);
+	m_CameraUniform.CmdCopy(*m_CmdBuffer, camera);
 	for (const Instance &instance : draw_list) {
 		DescriptorSet *set = m_SetPool.Alloc();
 		set->UpdateUniformBinding(0, 0, m_CameraUniform);
 
-		ModelUniform *model_uniform = m_ModelUniformPool.NewOrGet();
-		model_uniform->CmdUpdate(*m_CmdBuffer, instance.Transform);
+		UniformBuffer<ModelUniform> *model_uniform = m_ModelUniformPool.NewOrGet();
+		model_uniform->CmdCopy(*m_CmdBuffer, instance.Transform);
 		set->UpdateUniformBinding(1, 0, *model_uniform);
 	}
 

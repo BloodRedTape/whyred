@@ -17,91 +17,12 @@
 #include "material.hpp"
 #include "camera.hpp"
 #include "utils/pool.hpp"
+#include "uniforms.hpp"
 
 struct Instance {
     Transform Transform = {};
     Mesh     *Mesh      = nullptr;
     Material *Material  = nullptr;
-};
-
-class CameraUniform{
-private:
-    struct Staging{
-        Matrix4f u_Projection{1.f};
-        Matrix4f u_View{1.f};
-    };
-    UniquePtr<Buffer> m_UniformBuffer;
-    UniquePtr<Buffer> m_StagingBuffer;
-    Staging *m_StagingDataPtr{m_StagingBuffer->Map<Staging>()};
-public:
-    CameraUniform():
-        m_UniformBuffer(
-            Buffer::Create(
-                sizeof(Staging), 
-                BufferMemoryType::DynamicVRAM, 
-                BufferUsageBits::UniformBuffer | BufferUsageBits::TransferDestination
-            )
-        ),
-        m_StagingBuffer(
-            Buffer::Create(
-                sizeof(Staging), 
-                BufferMemoryType::UncachedRAM, 
-                BufferUsageBits::TransferSource
-            )
-        )
-    {}
-
-    void CmdUpdate(CommandBuffer& cmd_buffer, const Camera& camera) {
-        using namespace Math;
-        m_StagingDataPtr->u_Projection = camera.Projection;
-        m_StagingDataPtr->u_View = camera.View();
-
-        cmd_buffer.Copy(m_StagingBuffer.Get(), m_UniformBuffer.Get(), sizeof(Staging));
-    }
-
-    operator const Buffer*()const{
-        return m_UniformBuffer.Get();
-    }
-};
-
-class ModelUniform{
-private:
-    struct Staging{
-        Matrix4f u_Model;
-        Matrix4f u_Normal;
-    };
-    UniquePtr<Buffer> m_UniformBuffer;
-    UniquePtr<Buffer> m_StagingBuffer;
-    Staging *m_StagingDataPtr{m_StagingBuffer->Map<Staging>()};
-public:
-    ModelUniform():
-        m_UniformBuffer(
-            Buffer::Create(
-                sizeof(Staging), 
-                BufferMemoryType::DynamicVRAM, 
-                BufferUsageBits::UniformBuffer | BufferUsageBits::TransferDestination
-            )
-        ),
-        m_StagingBuffer(
-            Buffer::Create(
-                sizeof(Staging), 
-                BufferMemoryType::UncachedRAM, 
-                BufferUsageBits::TransferSource
-            )
-        )
-    {}
-
-    void CmdUpdate(CommandBuffer& cmd_buffer, const Transform& transform) {
-        using namespace Math;
-        m_StagingDataPtr->u_Model = transform.ToMatrix();
-        m_StagingDataPtr->u_Normal = Rotate<float>(Rad(transform.Rotation));
-
-        cmd_buffer.Copy(m_StagingBuffer.Get(), m_UniformBuffer.Get(), sizeof(Staging));
-    }
-
-    operator const Buffer*()const{
-        return m_UniformBuffer.Get();
-    }
 };
 
 class Renderer {
@@ -139,10 +60,10 @@ private:
     static constexpr size_t s_SetPoolSize = 20;
     SingleFrameDescriptorSetPool m_SetPool{{s_SetPoolSize, m_SetLayout.Get()}};
 
-    ReusableObjectsPool<ModelUniform> m_ModelUniformPool;
+    ReusableObjectsPool<UniformBuffer<ModelUniform>> m_ModelUniformPool;
 
     UniquePtr<GraphicsPipeline> m_GraphicsPipeline{nullptr};
-    CameraUniform m_CameraUniform;
+    UniformBuffer<CameraUniform> m_CameraUniform;
 public:
 	Renderer(const RenderPass *pass);
 
