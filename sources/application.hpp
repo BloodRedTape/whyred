@@ -1,6 +1,7 @@
 #pragma once
 
 #include <graphics/render_window.hpp>
+#include <graphics/render_texture.hpp>
 #include <imgui/backend.hpp>
 
 #include "render/renderer.hpp"

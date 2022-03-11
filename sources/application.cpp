@@ -68,7 +68,6 @@ void Application::OnImGui() {
 		ImGui::DragFloat3("Rotation", &instance.Transform.Rotation[0], 1, -180, 180);
 		ImGui::DragFloat3("Scale", &instance.Transform.Scale[0], 0.1, 0, 20);
 
-
 		ImGui::Separator();
 		ImGui::PopID();
 	}
@@ -92,7 +91,6 @@ void Application::OnEvent(const Event& e){
 		m_IsControlled = true;
 		Mouse::SetVisible(false);
 	}
-
 
 	m_Backend.HandleEvent(e);
 }
