@@ -15,11 +15,12 @@ layout(row_major, binding = 0) uniform Camera{
 
 layout(row_major, binding = 1) uniform Model{
 	mat4 u_Model;
+	mat4 u_Normal;
 };
 
 void main() {
 	v_WorldSpacePosition = (u_Model * vec4(a_ModelSpacePosition.xyz, 1.0)).xyz;
-	v_Normal = a_Normal;
+	v_Normal = mat3(u_Normal) * a_Normal;
 	v_Color  = a_Color;
 
 	gl_Position = u_Projection * u_View * vec4(v_WorldSpacePosition.xyz, 1.0);

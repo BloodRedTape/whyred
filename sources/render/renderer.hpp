@@ -68,6 +68,7 @@ class ModelUniform{
 private:
     struct Staging{
         Matrix4f u_Model;
+        Matrix4f u_Normal;
     };
     UniquePtr<Buffer> m_UniformBuffer;
     UniquePtr<Buffer> m_StagingBuffer;
@@ -93,6 +94,7 @@ public:
     void CmdUpdate(CommandBuffer& cmd_buffer, const Transform& transform) {
         using namespace Math;
         m_StagingDataPtr->u_Model = transform.ToMatrix();
+        m_StagingDataPtr->u_Normal = Rotate<float>(Rad(transform.Rotation));
 
         cmd_buffer.Copy(m_StagingBuffer.Get(), m_UniformBuffer.Get(), sizeof(Staging));
     }

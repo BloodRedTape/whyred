@@ -20,10 +20,12 @@ Application::Application(){
 	m_Meshes.Add(Mesh::LoadFromFile("content/cube.fbx"));
 	m_Meshes.Add(Mesh::LoadFromFile("content/sphere.fbx"));
 	m_Meshes.Add(Mesh(vertices, indices, "Test Quad"));
+	m_Meshes.Add(Mesh::LoadFromFile("content/plane.fbx"));
 
 	m_Instances.Emplace(Transform{{0, 0,-2}}, &m_Meshes[0], nullptr);
 	m_Instances.Emplace(Transform{{3, 0, 0}}, &m_Meshes[1], nullptr);
 	m_Instances.Emplace(Transform{{0, 1, 0}}, &m_Meshes[2], nullptr);
+	m_Instances.Emplace(Transform{{0,-1, 0}, {-90, 0, 0}, {20, 1, 20}}, &m_Meshes[3], nullptr);
 
 }
 
