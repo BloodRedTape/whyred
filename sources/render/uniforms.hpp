@@ -2,6 +2,7 @@
 
 #include <core/math/transform.hpp>
 #include "camera.hpp"
+#include "light.hpp"
 
 template <typename ContentStruct>
 class UniformBuffer{
@@ -40,10 +41,12 @@ public:
 struct CameraUniform{
     Matrix4f u_Projection;
     Matrix4f u_View;
+    Vector3f u_CameraPosition;
 
     CameraUniform(const Camera& camera):
         u_Projection(camera.Projection),
-        u_View(camera.View())
+        u_View(camera.View()),
+        u_CameraPosition(camera.Position)
     {}
 };
 
@@ -55,4 +58,18 @@ struct ModelUniform{
         u_Model(trasform.ToMatrix()),
         u_Normal(Math::Rotate<float>(Math::Rad(trasform.Rotation)))
     {}
+};
+
+struct LightsUniform {
+    static constexpr size_t s_MaxLightsCount = 32;
+
+    PointLight u_PointLights[s_MaxLightsCount];
+    int        u_PointLightsCount = 0;
+
+    LightsUniform(ConstSpan<PointLight> lights_list){
+        SX_ASSERT(lights_list.Size() <= s_MaxLightsCount);
+
+        for (const PointLight &light: lights_list)
+            u_PointLights[u_PointLightsCount++] = light;
+    }
 };

@@ -20,6 +20,7 @@ private:
 
 	List<Mesh> m_Meshes;
 	List<Instance> m_Instances;
+	List<PointLight> m_PointLights;
 
 	bool m_IsControlled = false;
 public:

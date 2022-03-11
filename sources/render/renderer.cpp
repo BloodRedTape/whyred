@@ -39,12 +39,13 @@ Renderer::Renderer(const RenderPass* pass):
 	m_RenderFinished.Signal();
 }
 
-void Renderer::Render(const Framebuffer* fb, const Camera& camera, ConstSpan<Instance> draw_list, const Semaphore* wait, const Semaphore* signal){
+void Renderer::Render(const Framebuffer* fb, const Camera& camera, ConstSpan<Instance> draw_list, ConstSpan<PointLight> light_list, const Semaphore* wait, const Semaphore* signal){
 	m_RenderFinished.WaitAndReset();
 	m_SetPool.NextFrame();
 	m_ModelUniformPool.Reset();
 
 	m_CmdBuffer->Begin();
+	m_LightsUniform.CmdCopy(*m_CmdBuffer, light_list);
 	m_CameraUniform.CmdCopy(*m_CmdBuffer, camera);
 	for (const Instance &instance : draw_list) {
 		DescriptorSet *set = m_SetPool.Alloc();
@@ -53,12 +54,15 @@ void Renderer::Render(const Framebuffer* fb, const Camera& camera, ConstSpan<Ins
 		UniformBuffer<ModelUniform> *model_uniform = m_ModelUniformPool.NewOrGet();
 		model_uniform->CmdCopy(*m_CmdBuffer, instance.Transform);
 		set->UpdateUniformBinding(1, 0, *model_uniform);
+
+		set->UpdateUniformBinding(2, 0, m_LightsUniform);
 	}
+
 
 	auto fb_size = fb->Size();
 	m_CmdBuffer->SetScissor (0, 0, fb_size.x, fb_size.y);
 	m_CmdBuffer->SetViewport(0, 0, fb_size.x, fb_size.y);
-	m_CmdBuffer->ClearColor(fb->Attachments()[0], Color::LightBlue);
+	m_CmdBuffer->ClearColor(fb->Attachments()[0], Color::Black);
 	m_CmdBuffer->ClearDepthStencil(fb->Attachments()[1], 1.f);
 	m_CmdBuffer->Bind(m_GraphicsPipeline.Get());
 	m_CmdBuffer->BeginRenderPass(m_Pass, fb);

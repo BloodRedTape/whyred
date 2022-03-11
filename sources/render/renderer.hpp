@@ -25,7 +25,7 @@ struct Instance {
     Material *Material  = nullptr;
 };
 
-class Renderer {
+class Renderer{
 private:
     const RenderPass *m_Pass;
     UniquePtr<CommandPool> m_Pool{
@@ -38,18 +38,24 @@ private:
 
     Fence m_RenderFinished;
 
-    const Array<ShaderBinding, 2> m_Bindings {
+    const Array<ShaderBinding, 3> m_Bindings {
         ShaderBinding{
             0,
             1,
             ShaderBindingType::UniformBuffer,
-            ShaderStageBits::Vertex
+            ShaderStageBits::Vertex | ShaderStageBits::Fragment
         },
         ShaderBinding{
             1,
             1,
             ShaderBindingType::UniformBuffer,
             ShaderStageBits::Vertex
+        },
+        ShaderBinding{
+            2,
+            1,
+            ShaderBindingType::UniformBuffer,
+            ShaderStageBits::Fragment
         }
     };
 
@@ -64,8 +70,9 @@ private:
 
     UniquePtr<GraphicsPipeline> m_GraphicsPipeline{nullptr};
     UniformBuffer<CameraUniform> m_CameraUniform;
+    UniformBuffer<LightsUniform> m_LightsUniform;
 public:
 	Renderer(const RenderPass *pass);
 
-    void Render(const Framebuffer *fb, const Camera &camera, ConstSpan<Instance> draw_list, const Semaphore *wait, const Semaphore *signal);
+    void Render(const Framebuffer *fb, const Camera &camera, ConstSpan<Instance> draw_list, ConstSpan<PointLight> light_list, const Semaphore *wait, const Semaphore *signal);
 };

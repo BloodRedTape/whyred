@@ -11,6 +11,7 @@ layout(location = 2)out vec3 v_Color;
 layout(row_major, binding = 0) uniform Camera{
 	mat4 u_Projection;
 	mat4 u_View;
+	vec3 u_CameraPosition;
 };
 
 layout(row_major, binding = 1) uniform Model{

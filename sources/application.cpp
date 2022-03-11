@@ -19,14 +19,16 @@ Application::Application(){
 
 	m_Meshes.Add(Mesh::LoadFromFile("content/cube.fbx"));
 	m_Meshes.Add(Mesh::LoadFromFile("content/sphere.fbx"));
-	m_Meshes.Add(Mesh(vertices, indices, "Test Quad"));
 	m_Meshes.Add(Mesh::LoadFromFile("content/plane.fbx"));
+	m_Meshes.Add(Mesh::LoadFromFile("content/monkey.fbx"));
 
-	m_Instances.Emplace(Transform{{0, 0,-2}}, &m_Meshes[0], nullptr);
+	m_Instances.Emplace(Transform{{-3, 0,-2}}, &m_Meshes[0], nullptr);
 	m_Instances.Emplace(Transform{{3, 0, 0}}, &m_Meshes[1], nullptr);
-	m_Instances.Emplace(Transform{{0, 1, 0}}, &m_Meshes[2], nullptr);
-	m_Instances.Emplace(Transform{{0,-1, 0}, {-90, 0, 0}, {20, 1, 20}}, &m_Meshes[3], nullptr);
+	m_Instances.Emplace(Transform{{0,-1, 0}, {-90, 0, 0}, {20, 1, 20}}, &m_Meshes[2], nullptr);
+	m_Instances.Emplace(Transform{{0, 2, -5}, {-90, 0, 0}, {3, 3, 3}}, &m_Meshes[3], nullptr);
 
+	m_PointLights.Add({{0, 2, 0}, 1, Color::Red});
+	m_PointLights.Add({{3, 2, 0}, 1, Color::Blue});
 }
 
 void Application::Run(){
@@ -43,7 +45,7 @@ void Application::Run(){
 	
 		m_Window.AcquireNextFramebuffer(&acquire);
 
-		m_Renderer.Render(m_Window.CurrentFramebuffer(), m_Camera, m_Instances, &acquire, &render);
+		m_Renderer.Render(m_Window.CurrentFramebuffer(), m_Camera, m_Instances, m_PointLights, &acquire, &render);
 
 		m_Backend.NewFrame(dt, mouse_position, m_Window.Size());
 
