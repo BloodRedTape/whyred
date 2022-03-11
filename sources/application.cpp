@@ -77,6 +77,7 @@ void Application::OnImGui() {
 }
 
 void Application::OnEvent(const Event& e){
+	Println("Event: %", (int)e.Type);
 	if(e.Type == EventType::WindowClose)
 		m_Window.Close();
 
