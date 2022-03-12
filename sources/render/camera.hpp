@@ -9,6 +9,10 @@ struct Camera {
 	Matrix4f Projection{1.f};
 
 	Matrix4f View()const;
+
+	Vector3f Project(Vector3f point)const{
+		return (Projection * Vector4f(point, 1)).XYZ();
+	}
 };
 
 struct PerspectiveCamera: Camera{

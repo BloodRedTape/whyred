@@ -16,6 +16,7 @@ set(SAMPLE_SOURCES
     "./sources/render/mesh.cpp"
     "./sources/render/transform.cpp"
     "./sources/render/camera.cpp"
+    "./sources/render/base_pass.cpp"
     "./sources/camera_controller.cpp"
     "./sources/utils/fs.cpp"
 )

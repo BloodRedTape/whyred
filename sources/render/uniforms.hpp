@@ -1,7 +1,8 @@
 #pragma once
 
 #include <core/math/transform.hpp>
-#include "camera.hpp"
+#include "render/scene.hpp"
+#include "render/camera.hpp"
 
 template <typename ContentStruct>
 class UniformBuffer{
@@ -57,25 +58,6 @@ struct ModelUniform{
         u_Model(trasform.ToMatrix()),
         u_Normal(Math::Rotate<float>(Math::Rad(trasform.Rotation)))
     {}
-};
-
-struct alignas(sizeof(Vector4f)) PointLight{
-	Vector3f Position  = {0, 0, 0};
-	float    Radius    = 0;
-	Vector4f Color     = {1.f, 1.f, 1.f, 1.f};
-};
-
-struct alignas(sizeof(Vector4f)) DirLight {
-	Vector4f Color     = {1.f, 1.f, 1.f, 1.f};
-	Vector3f Direction = {0, 0, 0};
-};
-
-struct alignas(sizeof(Vector4f)) Spotlight {
-    Vector3f Position = {0, 0, 0};
-    float    CutoffAngle = 40;
-	Vector4f Color     = {1.f, 1.f, 1.f, 1.f};
-    Vector3f Direction = {0, 0, 1};
-    float    DimAngle = 5;
 };
 
 struct LightsUniform {
