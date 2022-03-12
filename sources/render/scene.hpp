@@ -16,6 +16,13 @@ struct alignas(sizeof(Vector4f)) DirLight {
 	Vector3f Direction = {0, 0, 0};
 };
 
+struct alignas(sizeof(Vector4f)) Sunlight {
+    Vector4f Color = {1.f};
+    Vector3f Positon = {5, 11, 7};
+    int _pad;
+    Vector3f Rotation = {35, 144, 0};
+};
+
 struct alignas(sizeof(Vector4f)) Spotlight {
     Vector3f Position = {0, 0, 0};
     float    CutoffAngle = 40;
@@ -34,4 +41,6 @@ struct Scene {
     ConstSpan<PointLight> PointLights;
     ConstSpan<DirLight>   DirLights;
     ConstSpan<Spotlight>  Spotlights;
+
+    Sunlight Sunlight;
 };

@@ -16,6 +16,7 @@ private:
 	Renderer m_Renderer{m_Window.FramebufferPass()};
 	
 	PerspectiveCamera m_Camera{16.0/9.0, 90, 0, 100};
+	//OrthographicCamera m_Camera{10, 10, 0, 100};
 	CameraController m_Controller{m_Camera, Mouse::RelativePosition(m_Window)};
 
 	List<Mesh> m_Meshes;
@@ -23,6 +24,8 @@ private:
 	List<PointLight> m_PointLights;
 	List<DirLight> m_DirLights;
 	List<Spotlight> m_Spotlights;
+
+	Sunlight m_Sunlight;
 
 	bool m_IsControlled = false;
 public:

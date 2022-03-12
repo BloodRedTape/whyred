@@ -61,6 +61,7 @@ void Application::Run(){
 		scene.PointLights = m_PointLights;
 		scene.DirLights = m_DirLights;
 		scene.Spotlights = m_Spotlights;
+		scene.Sunlight = m_Sunlight;
 
 		m_Renderer.Render(m_Window.CurrentFramebuffer(), m_Camera, scene, &acquire, &render);
 
@@ -117,6 +118,9 @@ void Application::OnImGui() {
 			}
 			ImGui::EndChild();
 		}
+
+		ImGui::DragFloat3("SunPosition", &m_Sunlight.Positon[0]);
+		ImGui::DragFloat3("SunPotation", &m_Sunlight.Rotation[0]);
 	}
 	ImGui::End();
 }

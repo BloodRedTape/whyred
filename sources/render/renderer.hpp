@@ -15,6 +15,7 @@
 #include "utils/pool.hpp"
 #include "render/uniforms.hpp"
 #include "render/base_pass.hpp"
+#include "render/shadow_pass.hpp"
 
 class Renderer{
 private:
@@ -27,6 +28,7 @@ private:
     };
 
     BasePass m_BasePass;
+    ShadowPass m_ShadowPass;
 
     Fence m_RenderFinished;
 public:

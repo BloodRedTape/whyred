@@ -40,6 +40,13 @@ layout(binding = 2)uniform Lights {
     int        u_SpotlightsCount;
 };
 
+layout(row_major, binding = 3) uniform ShadowCamera{
+	mat4 u_ShadowProjection;
+	mat4 u_ShadowView;
+};
+
+layout(binding = 4)uniform sampler2D u_ShadowMap;
+
 float Rad(float degrees) {
 	return degrees / 180 * 3.14159265358979323;
 }
@@ -108,12 +115,39 @@ vec3 EvalueateSpotlights() {
 	return color;
 }
 
+
+
+vec3 GetFragmentGlPosition(){
+	vec4 res = u_ShadowProjection * u_ShadowView * vec4(v_WorldSpacePosition.xyz, 1);
+	return res.xyz / res.w;
+}
+
+vec2 GetFragmentUV(){
+	return GetFragmentGlPosition().xy * 0.5 + 0.5;
+}
+
+float GetShadowMapDepth(){
+	return texture(u_ShadowMap, GetFragmentUV()).r + 0.0001;
+}
+float GetFragmentDepth(){
+	return GetFragmentGlPosition().z;
+}
+
+float EvalueateShadow(){
+	if(GetFragmentDepth() > GetShadowMapDepth())
+		return 0.2;
+	return 1;	
+}
+
 void main() {
 	vec3 color = vec3(0);
 
 	color += EvalueatePointLights();
 	color += EvalueateDirLights();
 	color += EvalueateSpotlights();
+	color *= EvalueateShadow();
+
+	//color = vec3(GetShadowMapDepth());
 
 	f_Color = vec4(color, 1.0);
 }

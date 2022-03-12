@@ -16,7 +16,8 @@ void Renderer::Render(const Framebuffer* fb, const Camera& camera, const Scene &
 	m_RenderFinished.WaitAndReset();
 	
 	m_CmdBuffer->Begin();
-	m_BasePass.CmdRenderPass(*m_CmdBuffer, fb, camera, scene);
+	auto map_cam = m_ShadowPass.CmdRenderPass(*m_CmdBuffer, camera, scene);
+	m_BasePass.CmdRenderPass(*m_CmdBuffer, fb, camera, scene, map_cam.First, map_cam.Second);
 	m_CmdBuffer->End();
 
 	GPU::Execute(m_CmdBuffer.Get(), *wait, *signal, m_RenderFinished);

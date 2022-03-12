@@ -2,6 +2,7 @@
 
 #include <core/span.hpp>
 #include <core/math/vector3.hpp>
+#include <core/math/aabb3.hpp>
 #include <core/unique_ptr.hpp>
 #include <core/string.hpp>
 #include <graphics/api/buffer.hpp>
@@ -20,8 +21,9 @@ private:
 	UniquePtr<Buffer> m_VertexBuffer;
 	UniquePtr<Buffer> m_IndexBuffer;
 	String m_Name;
+	AABB3f m_BoundingBox;
 public:
-	Mesh(ConstSpan<Vertex> vertices, ConstSpan<Index> indices, String name = "");
+	Mesh(ConstSpan<Vertex> vertices, ConstSpan<Index> indices, const AABB3f &bounding_box, String name = "");
 
 	Mesh(Mesh &&) = default;
 
@@ -35,6 +37,10 @@ public:
 
 	const String& Name()const {
 		return m_Name;
+	}
+
+	const AABB3f &BoundingBox()const {
+		return m_BoundingBox;
 	}
 
 	static Mesh LoadFromFile(const char *filepath);

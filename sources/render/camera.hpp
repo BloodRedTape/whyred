@@ -18,3 +18,6 @@ struct Camera {
 struct PerspectiveCamera: Camera{
 	PerspectiveCamera(float aspect, float fov, float near, float far);
 };
+struct OrthographicCamera: Camera{
+	OrthographicCamera(float width, float height, float near, float far);
+};

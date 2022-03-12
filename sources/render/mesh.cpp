@@ -10,7 +10,7 @@
 #include <string>
 #include <core/os/file.hpp>
 
-Mesh::Mesh(ConstSpan<Vertex> vertices, ConstSpan<Index> indices, String name):
+Mesh::Mesh(ConstSpan<Vertex> vertices, ConstSpan<Index> indices, const AABB3f &bounding_box, String name):
 	m_VertexBuffer(
 		Buffer::Create(
 			vertices.Pointer(), vertices.Size() * sizeof(Vertex), 
@@ -25,6 +25,7 @@ Mesh::Mesh(ConstSpan<Vertex> vertices, ConstSpan<Index> indices, String name):
 			BufferUsageBits::IndexBuffer| BufferUsageBits::TransferDestination
 		)
 	),
+    m_BoundingBox(bounding_box),
     m_Name(Move(name))
 {}
 
@@ -65,21 +66,37 @@ Mesh Mesh::LoadFromFile(const char* filepath) {
     vertices.Reserve(vertices_count);
     indices.Reserve(indices_count);
 
-    for(int i = 0; i<scene->mNumMeshes; i++){
-        for(int k = 0; k<scene->mMeshes[i]->mNumVertices; k++){
-            vertices.Add(
-                {
-                    ToVector3(scene->mMeshes[i]->mVertices[k]),
-                    ToVector3(scene->mMeshes[i]->mNormals[k]),
-                    Vector3f{1, 1, 1}
-                }
-            );
-        }
+    SX_ASSERT(scene->mNumMeshes);
 
-        for(int j = 0; j<scene->mMeshes[i]->mNumFaces; j++)
-            for(int h = 0; h<scene->mMeshes[i]->mFaces[j].mNumIndices;h++)
-                indices.Add(scene->mMeshes[i]->mFaces[j].mIndices[h]);
+    AABB3f aabb{ToVector3(*scene->mMeshes[0]->mVertices),ToVector3(*scene->mMeshes[0]->mVertices)};
+
+    for(int k = 0; k<scene->mMeshes[0]->mNumVertices; k++){
+        Vector3f position = ToVector3(scene->mMeshes[0]->mVertices[k]);
+
+        if(position.x > aabb.Max.x)
+            aabb.Max.x = position.x;
+        if(position.y > aabb.Max.y)
+            aabb.Max.y = position.y;
+        if(position.z > aabb.Max.z)
+            aabb.Max.z = position.z;
+
+        if(position.x < aabb.Min.x)
+            aabb.Min.x = position.x;
+        if(position.y < aabb.Min.y)
+            aabb.Min.y = position.y;
+        if(position.z < aabb.Min.z)
+            aabb.Min.z = position.z;
+            
+        vertices.Add({
+            position,
+            ToVector3(scene->mMeshes[0]->mNormals[k]),
+            Vector3f{1, 1, 1}
+        });
     }
 
-    return Mesh(vertices, indices, filepath);
+    for(int j = 0; j<scene->mMeshes[0]->mNumFaces; j++)
+        for(int h = 0; h<scene->mMeshes[0]->mFaces[j].mNumIndices;h++)
+            indices.Add(scene->mMeshes[0]->mFaces[j].mIndices[h]);
+
+    return Mesh(vertices, indices, aabb, filepath);
 }
