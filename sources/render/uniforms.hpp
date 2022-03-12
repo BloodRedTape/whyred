@@ -59,10 +59,23 @@ struct ModelUniform{
     {}
 };
 
-struct PointLight{
+struct alignas(sizeof(Vector4f)) PointLight{
 	Vector3f Position  = {0, 0, 0};
 	float    Radius    = 0;
 	Vector4f Color     = {1.f, 1.f, 1.f, 1.f};
+};
+
+struct alignas(sizeof(Vector4f)) DirLight {
+	Vector4f Color     = {1.f, 1.f, 1.f, 1.f};
+	Vector3f Direction = {0, 0, 0};
+};
+
+struct alignas(sizeof(Vector4f)) Spotlight {
+    Vector3f Position = {0, 0, 0};
+    float    CutoffAngle = 40;
+	Vector4f Color     = {1.f, 1.f, 1.f, 1.f};
+    Vector3f Direction = {0, 0, 1};
+    float    DimAngle = 5;
 };
 
 struct LightsUniform {
@@ -70,11 +83,23 @@ struct LightsUniform {
 
     PointLight u_PointLights[s_MaxLightsCount];
     int        u_PointLightsCount = 0;
+    DirLight   u_DirLights[s_MaxLightsCount];
+    int        u_DirLightsCount = 0;
+    Spotlight  u_Spotlights[s_MaxLightsCount];
+    int        u_SpotlightsCount = 0;
 
-    LightsUniform(ConstSpan<PointLight> lights_list){
-        SX_ASSERT(lights_list.Size() <= s_MaxLightsCount);
+    LightsUniform(ConstSpan<PointLight> point_lights, ConstSpan<DirLight> dir_lights, ConstSpan<Spotlight> spotlights){
+        SX_ASSERT(point_lights.Size() <= s_MaxLightsCount);
+        SX_ASSERT(dir_lights.Size() <= s_MaxLightsCount);
+        SX_ASSERT(spotlights.Size() <= s_MaxLightsCount);
 
-        for (const PointLight &light: lights_list)
+        for (const PointLight &light: point_lights)
             u_PointLights[u_PointLightsCount++] = light;
+
+        for (const DirLight &light: dir_lights)
+            u_DirLights[u_DirLightsCount++] = light;
+
+        for (const Spotlight &light: spotlights)
+            u_Spotlights[u_SpotlightsCount++] = light;
     }
 };

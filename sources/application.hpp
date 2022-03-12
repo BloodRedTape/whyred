@@ -10,7 +10,7 @@
 
 class Application {
 private:
-	RenderWindow m_Window{1280, 720, "PBR", TextureFormat::Depth32};
+	RenderWindow m_Window{1600, 900, "PBR", TextureFormat::Depth32};
 	ImGuiBackend m_Backend{m_Window.FramebufferPass()};
 
 	Renderer m_Renderer{m_Window.FramebufferPass()};
@@ -21,6 +21,8 @@ private:
 	List<Mesh> m_Meshes;
 	List<Instance> m_Instances;
 	List<PointLight> m_PointLights;
+	List<DirLight> m_DirLights;
+	List<Spotlight> m_Spotlights;
 
 	bool m_IsControlled = false;
 public:

@@ -39,15 +39,15 @@ Renderer::Renderer(const RenderPass* pass):
 	m_RenderFinished.Signal();
 }
 
-void Renderer::Render(const Framebuffer* fb, const Camera& camera, ConstSpan<Instance> draw_list, ConstSpan<PointLight> light_list, const Semaphore* wait, const Semaphore* signal){
+void Renderer::Render(const Framebuffer* fb, const Camera& camera, const Scene &scene, const Semaphore* wait, const Semaphore* signal){
 	m_RenderFinished.WaitAndReset();
 	m_SetPool.NextFrame();
 	m_ModelUniformPool.Reset();
 
 	m_CmdBuffer->Begin();
-	m_LightsUniform.CmdCopy(*m_CmdBuffer, light_list);
+	m_LightsUniform.CmdCopy(*m_CmdBuffer, {scene.PointLights, scene.DirLights, scene.Spotlights});
 	m_CameraUniform.CmdCopy(*m_CmdBuffer, camera);
-	for (const Instance &instance : draw_list) {
+	for (const Instance &instance : scene.Instances) {
 		DescriptorSet *set = m_SetPool.Alloc();
 		set->UpdateUniformBinding(0, 0, m_CameraUniform);
 
@@ -67,9 +67,9 @@ void Renderer::Render(const Framebuffer* fb, const Camera& camera, ConstSpan<Ins
 	m_CmdBuffer->Bind(m_GraphicsPipeline.Get());
 	m_CmdBuffer->BeginRenderPass(m_Pass, fb);
 	{
-		for(int i = 0; i<draw_list.Size(); i++){
+		for(int i = 0; i<scene.Instances.Size(); i++){
 			m_CmdBuffer->Bind(m_SetPool[i]);
-			draw_list[i].Mesh->CmdDraw(*m_CmdBuffer);
+			scene.Instances[i].Mesh->CmdDraw(*m_CmdBuffer);
 		}
 	}
 	m_CmdBuffer->EndRenderPass();

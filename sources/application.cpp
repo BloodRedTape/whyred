@@ -1,6 +1,7 @@
 #include "application.hpp"
 #include <graphics/api/gpu.hpp>
 #include <core/os/clock.hpp>
+#include "ui.hpp"
 
 Application::Application(){
 	m_Window.SetEventsHanlder({this, &Application::OnEvent});
@@ -29,6 +30,16 @@ Application::Application(){
 
 	m_PointLights.Add({{0, 2, 0}, 3, Color::Red});
 	m_PointLights.Add({{3, 2, 0}, 2, Color::Blue});
+
+	m_DirLights.Add({Color(1.f, 0.5f, 0.f, 0.2f), {-1, 1, 0}});
+
+	m_Spotlights.Add({
+		{0, 4.3, 0},
+		40,
+		Color::Red,
+		{0, -1, 0},
+		1
+	});
 }
 
 void Application::Run(){
@@ -45,7 +56,13 @@ void Application::Run(){
 	
 		m_Window.AcquireNextFramebuffer(&acquire);
 
-		m_Renderer.Render(m_Window.CurrentFramebuffer(), m_Camera, m_Instances, m_PointLights, &acquire, &render);
+		Scene scene;
+		scene.Instances = m_Instances;
+		scene.PointLights = m_PointLights;
+		scene.DirLights = m_DirLights;
+		scene.Spotlights = m_Spotlights;
+
+		m_Renderer.Render(m_Window.CurrentFramebuffer(), m_Camera, scene, &acquire, &render);
 
 		m_Backend.NewFrame(dt, mouse_position, m_Window.Size());
 
@@ -62,32 +79,45 @@ void Application::Run(){
 }
 
 void Application::OnImGui() {
-	ImGui::Begin("Debug");
-	for (int i = 0; i<m_Instances.Size(); i++) {
-		Instance &instance = m_Instances[i];
+	ImGui::ShowDemoWindow();
+	ImGui::Begin("Scene");
+	{
+		ImVec2 size = ImGui::GetContentRegionAvail();
+		if(ImGui::CollapsingHeader("Instances")){
+			ImGui::BeginChild("Instances", ImVec2(size.x, int(size.y/2 - ImGui::GetItemRectSize().y - ImGui::GetStyle().ItemSpacing.y * 2)));
+			{
+				ImGui::DragInstances(m_Instances);
+			}
+			ImGui::EndChild();
+		}
 
-		ImGui::PushID(i);
-		ImGui::Text("Mesh: %s", instance.Mesh->Name().Data());
-		ImGui::DragFloat3("Position", &instance.Transform.Position[0], 0.1, -20, 20);
-		ImGui::DragFloat3("Rotation", &instance.Transform.Rotation[0], 1, -180, 180);
-		ImGui::DragFloat3("Scale", &instance.Transform.Scale[0], 0.1, 0, 20);
+		if(ImGui::CollapsingHeader("PointLights")){
+			ImGui::BeginChild("PointLights", ImVec2(size.x, int(size.y/2 - ImGui::GetItemRectSize().y - ImGui::GetStyle().ItemSpacing.y * 2)));
+			{
+				static PointLight new_light;
+				if(ImGui::NewPointLight(new_light))
+					m_PointLights.Add(new_light);
+				ImGui::DragPointLights(m_PointLights);
+			}
+			ImGui::EndChild();
+		}
 
-		ImGui::Separator();
-		ImGui::PopID();
+		if(ImGui::CollapsingHeader("DirLights")){
+			ImGui::BeginChild("DirLights", ImVec2(size.x, int(size.y/2 - ImGui::GetItemRectSize().y - ImGui::GetStyle().ItemSpacing.y * 2)));
+			{
+				ImGui::DragDirLights(m_DirLights);
+			}
+			ImGui::EndChild();
+		}
+
+		if(ImGui::CollapsingHeader("Spotlights")){
+			ImGui::BeginChild("Spotlights", ImVec2(size.x, int(size.y/2 - ImGui::GetItemRectSize().y - ImGui::GetStyle().ItemSpacing.y * 2)));
+			{
+				ImGui::DragSpotlights(m_Spotlights);
+			}
+			ImGui::EndChild();
+		}
 	}
-
-	ImGui::PushID(1);
-	for (int i = 0; i<m_PointLights.Size(); i++) {
-		PointLight &light = m_PointLights[i];
-
-		ImGui::PushID(i);
-		ImGui::DragFloat3("Position", &light.Position[0], 0.1, -20, 20);
-		ImGui::DragFloat("Radius", &light.Radius, 0.1, 0, 20);
-		ImGui::ColorEdit3("Color", &light.Color[0]);
-		ImGui::Separator();
-		ImGui::PopID();
-	}
-	ImGui::PopID();
 	ImGui::End();
 }
 

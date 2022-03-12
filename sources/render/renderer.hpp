@@ -23,6 +23,13 @@ struct Instance {
     Mesh     *Mesh      = nullptr;
 };
 
+struct Scene {
+    ConstSpan<Instance>   Instances;
+    ConstSpan<PointLight> PointLights;
+    ConstSpan<DirLight>   DirLights;
+    ConstSpan<Spotlight>  Spotlights;
+};
+
 class Renderer{
 private:
     const RenderPass *m_Pass;
@@ -72,5 +79,5 @@ private:
 public:
 	Renderer(const RenderPass *pass);
 
-    void Render(const Framebuffer *fb, const Camera &camera, ConstSpan<Instance> draw_list, ConstSpan<PointLight> light_list, const Semaphore *wait, const Semaphore *signal);
+    void Render(const Framebuffer *fb, const Camera &camera, const Scene &scene, const Semaphore *wait, const Semaphore *signal);
 };
