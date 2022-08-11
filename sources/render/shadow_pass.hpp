@@ -48,7 +48,7 @@ private:
             ShaderStageBits::Vertex
         }
     };
-    RenderTexture m_ShadowMap{{4096, 4096}, TextureFormat::Unknown, TextureFormat::Depth32};
+    RenderTexture m_ShadowMap{{1024, 1024}, TextureFormat::Unknown, TextureFormat::Depth32};
 
     UniquePtr<DescriptorSetLayout> m_SetLayout{
         DescriptorSetLayout::Create(m_Bindings)

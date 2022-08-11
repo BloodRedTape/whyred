@@ -107,7 +107,7 @@ vec3 EvalueateSpotlights() {
 
 		if(angle < Rad(outer_angle)){
 			float attenumation = 1;
-			attenumation = pow(1 - clamp((Deg(angle) - u_Spotlights[i].CutoffAngle)/u_Spotlights[i].DimAngle, 0, 1.0), 2);
+			attenumation = pow(1 - clamp((Deg(angle) - u_Spotlights[i].CutoffAngle)/u_Spotlights[i].DimAngle, 0.0, 1.0), 2);
 			color += Diffuse(frag_to_light, u_Spotlights[i].Color) * attenumation;
 			color += Specular(frag_to_light, u_Spotlights[i].Color);
 		}
@@ -126,17 +126,44 @@ vec2 GetFragmentUV(){
 	return GetFragmentGlPosition().xy * 0.5 + 0.5;
 }
 
-float GetShadowMapDepth(){
-	return texture(u_ShadowMap, GetFragmentUV()).r + 0.0001;
+int Seed = 0;
+int RandMax = 32767;
+
+int RandInt() // RAND_MAX assumed to be 32767
+{
+    Seed = Seed * 645615245 + 7919;
+    return int(uint(Seed/65536) % 32768);
 }
+
+float RandFloat(){
+    return RandInt() / float(RandMax);
+}
+
+#define NUM_SHADOW_SAMPLES 64
+#define SAMPLE_SPAN 2
+
 float GetFragmentDepth(){
 	return GetFragmentGlPosition().z;
 }
 
+float GetShadowMapDepth(){
+	Seed = int((GetFragmentUV().x + GetFragmentUV().y) * 10000);
+
+	float frag_depth = GetFragmentDepth();
+	float shadow = 0.0;
+	vec2 texelSize = 1.0 / textureSize(u_ShadowMap, 0);
+
+	for(int i = 0; i<NUM_SHADOW_SAMPLES; i++){
+		float pcfDepth = texture(u_ShadowMap, GetFragmentUV().xy + vec2(RandFloat()*SAMPLE_SPAN, RandFloat()*SAMPLE_SPAN) * texelSize).r; 
+		shadow += (frag_depth > pcfDepth + 0.001) ? 0.0 : 1.0;        
+	}
+	shadow /= float(NUM_SHADOW_SAMPLES);
+	return shadow;
+	return texture(u_ShadowMap, GetFragmentUV()).r + 0.0001;
+}
+
 float EvalueateShadow(){
-	if(GetFragmentDepth() > GetShadowMapDepth())
-		return 0.2;
-	return 1;	
+	return GetShadowMapDepth();	
 }
 
 void main() {
