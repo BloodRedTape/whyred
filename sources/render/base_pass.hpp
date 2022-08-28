@@ -6,6 +6,7 @@
 #include <graphics/api/graphics_pipeline.hpp>
 #include <graphics/api/fence.hpp>
 #include <graphics/api/shader.hpp>
+#include <core/math/vector3.hpp>
 #include "render/camera.hpp"
 #include "render/scene.hpp"
 #include "render/uniforms.hpp"

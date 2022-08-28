@@ -80,7 +80,7 @@ void Application::Run(){
 }
 
 void Application::OnImGui() {
-	ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
 	ImGui::Begin("Scene");
 	{
 		ImVec2 size = ImGui::GetContentRegionAvail();

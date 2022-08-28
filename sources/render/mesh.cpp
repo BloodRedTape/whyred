@@ -9,6 +9,7 @@
 #include <core/list.hpp>
 #include <string>
 #include <core/os/file.hpp>
+#include <cassert>
 
 Mesh::Mesh(ConstSpan<Vertex> vertices, ConstSpan<Index> indices, const AABB3f &bounding_box, String name):
 	m_VertexBuffer(
@@ -42,10 +43,10 @@ static Vector3f ToVector3(aiVector3D vector){
 Mesh Mesh::LoadFromFile(const char* filepath) {
     std::string path = filepath;
 
-    if(!File::Exist(path.c_str()))
+    if(!File::Exists(path.c_str()))
         path = "../../../" + path;
 
-    SX_ASSERT(File::Exist(path.c_str()));
+    SX_ASSERT(File::Exists(path.c_str()));
 
     Assimp::Importer imp;
     const aiScene *scene = imp.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals);
