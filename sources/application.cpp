@@ -4,7 +4,7 @@
 #include "ui.hpp"
 
 Application::Application(){
-	m_Window.SetEventsHanlder({this, &Application::OnEvent});
+	m_Window.SetEventsHandler({this, &Application::OnEvent});
 
 	Vertex vertices[] = {
 		{{ 0.5f, 0.5f, 0.5f}, {}, {}},
