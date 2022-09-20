@@ -53,25 +53,27 @@ void Application::Run(){
 		
 		if(m_IsControlled)
 			m_Controller.Update(dt, mouse_position);
-	
-		m_Window.AcquireNextFramebuffer(&acquire);
+		
+		if (m_InFocus) {
+			m_Window.AcquireNextFramebuffer(&acquire);
 
-		Scene scene;
-		scene.Instances = m_Instances;
-		scene.PointLights = m_PointLights;
-		scene.DirLights = m_DirLights;
-		scene.Spotlights = m_Spotlights;
-		scene.Sunlight = m_Sunlight;
+			Scene scene;
+			scene.Instances = m_Instances;
+			scene.PointLights = m_PointLights;
+			scene.DirLights = m_DirLights;
+			scene.Spotlights = m_Spotlights;
+			scene.Sunlight = m_Sunlight;
 
-		m_Renderer.Render(m_Window.CurrentFramebuffer(), m_Camera, scene, &acquire, &render);
+			m_Renderer.Render(m_Window.CurrentFramebuffer(), m_Camera, scene, &acquire, &render);
 
-		m_Backend.NewFrame(dt, mouse_position, m_Window.Size());
+			m_Backend.NewFrame(dt, mouse_position, m_Window.Size());
 
-		OnImGui();
+			OnImGui();
 
-		m_Backend.RenderFrame(m_Window.CurrentFramebuffer(), &render, &present);
+			m_Backend.RenderFrame(m_Window.CurrentFramebuffer(), &render, &present);
 
-		m_Window.PresentCurrentFramebuffer(&present);
+			m_Window.PresentCurrentFramebuffer(&present);
+		}
 
 		m_Window.DispatchEvents();
 
@@ -144,6 +146,10 @@ void Application::OnEvent(const Event& e){
 		m_IsControlled = false;
 		Mouse::SetVisible(true);
 	}
+	if (e.Type == EventType::FocusIn)
+		m_InFocus = true;
+	if (e.Type == EventType::FocusOut)
+		m_InFocus = false;
 
 	if (e.Type == EventType::MouseButtonPress && !ImGui::IsWindowHovered(ImGuiFocusedFlags_AnyWindow)) {
 		m_Controller.Reset(Mouse::RelativePosition(m_Window));

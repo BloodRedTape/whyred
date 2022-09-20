@@ -28,6 +28,7 @@ private:
 	Sunlight m_Sunlight;
 
 	bool m_IsControlled = false;
+	bool m_InFocus = true;
 public:
 	Application();
 
