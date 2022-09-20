@@ -1,5 +1,4 @@
 #include "render/base_pass.hpp"
-#include "utils/fs.hpp"
 #include <graphics/api/framebuffer.hpp>
 
 BasePass::BasePass(const RenderPass *pass):
@@ -11,10 +10,10 @@ BasePass::BasePass(const RenderPass *pass):
 			VertexAttribute::Float32x3,
 			VertexAttribute::Float32x3
 		};
-
+		
 		const Shader * shaders[] = {
-			Shader::Create(ShaderLang::GLSL, ShaderStageBits::Vertex,   ReadEntireFile("shaders/base.vert.glsl")),
-			Shader::Create(ShaderLang::GLSL, ShaderStageBits::Fragment, ReadEntireFile("shaders/base.frag.glsl"))
+			Shader::Create(ShaderLang::GLSL, ShaderStageBits::Vertex,   File::ReadEntire("shaders/base.vert.glsl").Value()),
+			Shader::Create(ShaderLang::GLSL, ShaderStageBits::Fragment, File::ReadEntire("shaders/base.frag.glsl").Value())
 		};
 
 		GraphicsPipelineProperties props;

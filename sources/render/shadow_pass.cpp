@@ -1,5 +1,4 @@
 #include "render/shadow_pass.hpp"
-#include "utils/fs.hpp"
 
 ShadowPass::ShadowPass(){
 	{
@@ -10,8 +9,8 @@ ShadowPass::ShadowPass(){
 		};
 
 		const Shader * shaders[] = {
-			Shader::Create(ShaderLang::GLSL, ShaderStageBits::Vertex,   ReadEntireFile("shaders/shadow.vert.glsl")),
-			Shader::Create(ShaderLang::GLSL, ShaderStageBits::Fragment, ReadEntireFile("shaders/shadow.frag.glsl"))
+			Shader::Create(ShaderLang::GLSL, ShaderStageBits::Vertex,   File::ReadEntire("shaders/shadow.vert.glsl").Value()),
+			Shader::Create(ShaderLang::GLSL, ShaderStageBits::Fragment, File::ReadEntire("shaders/shadow.frag.glsl").Value())
 		};
 
 		GraphicsPipelineProperties props;

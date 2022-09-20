@@ -74,6 +74,7 @@ void Application::Run(){
 		m_Window.PresentCurrentFramebuffer(&present);
 
 		m_Window.DispatchEvents();
+
 	}
 
 	GPU::WaitIdle();
@@ -81,6 +82,12 @@ void Application::Run(){
 
 void Application::OnImGui() {
 	//ImGui::ShowDemoWindow();
+
+	ImGui::Begin("Stats");
+	{
+		ImGui::Text("GraphicsResources: %d", GraphicsResource::Count());
+	}
+	ImGui::End();
 	ImGui::Begin("Scene");
 	{
 		ImVec2 size = ImGui::GetContentRegionAvail();
